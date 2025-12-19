@@ -1,6 +1,6 @@
 # Inertia Vuetify Notifications
 
-Display Inertia.js v2 flash messages as Vuetify snackbar notifications with support for actions.
+Display Inertia flash messages as Vuetify snackbar notifications with support for actions.
 
 ## Installation
 
