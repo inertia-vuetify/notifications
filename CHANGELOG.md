@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/gigerIT/inertia-vuetify-notifications/compare/v1.0.2...v1.0.3) (2025-12-19)
+
+
+### Bug Fixes
+
+* trigger ci publish ([2ec2473](https://github.com/gigerIT/inertia-vuetify-notifications/commit/2ec24738eaffaebd494069f4c05403e4e996bc13))
+
 ## [1.0.2](https://github.com/gigerIT/inertia-vuetify-notifications/compare/v1.0.1...v1.0.2) (2025-12-19)
 
 
