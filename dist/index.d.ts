@@ -3,6 +3,7 @@ import { ComponentProvideOptions } from 'vue';
 import { DefineComponent } from 'vue';
 import { Plugin as Plugin_2 } from 'vue';
 import { PublicProps } from 'vue';
+import { Ref } from 'vue';
 
 /**
  * Action handler function signature
@@ -66,7 +67,7 @@ export declare interface NotificationContext {
     /**
      * Reactive queue of notifications
      */
-    queue: InternalSnackbarItem[];
+    queue: Ref<InternalSnackbarItem[]>;
     /**
      * Add a notification to the queue
      */

@@ -1,4 +1,4 @@
-import type { InjectionKey } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
 
 /**
  * HTTP methods supported for URL-based actions
@@ -127,7 +127,7 @@ export interface NotificationContext {
     /**
      * Reactive queue of notifications
      */
-    queue: InternalSnackbarItem[]
+    queue: Ref<InternalSnackbarItem[]>
 
     /**
      * Add a notification to the queue

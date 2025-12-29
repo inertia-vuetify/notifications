@@ -1,4 +1,4 @@
-import { inject, reactive } from 'vue'
+import { inject, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import {
   NOTIFICATION_INJECTION_KEY,
@@ -43,7 +43,7 @@ export function createNotificationContext(
     actions: { ...userOptions.actions },
   }
 
-  const queue = reactive<InternalSnackbarItem[]>([])
+  const queue = ref<InternalSnackbarItem[]>([])
   const actionRegistry: ActionRegistry = new Map()
 
   // Register initial actions from options
@@ -89,7 +89,7 @@ export function createNotificationContext(
    */
   function notify(notification: string | StructuredNotification, flashKey?: string): void {
     const item = parseNotification(notification, flashKey)
-    queue.push(item)
+    queue.value.push(item)
   }
 
   /**
