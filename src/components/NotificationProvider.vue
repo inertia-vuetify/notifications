@@ -51,7 +51,7 @@ function isClosable(item: unknown): boolean {
           {{ getActionLabel(action) }}
         </VBtn>
       </template>
-      <VBtn v-if="isClosable(item)" v-bind="closeProps" />
+      <VBtn v-if="isClosable(item)" v-bind="closeProps" icon="mdi-close"/>
     </template>
   </VSnackbarQueue>
 </template>
