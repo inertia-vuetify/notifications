@@ -31,3 +31,4 @@ export function inertiaVuetifyNotifications(options: NotificationPluginOptions =
   }
 }
 
+

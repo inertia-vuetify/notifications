@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "@gigerit/inertia-vuetify-notifications",
     "version": "1.0.3",
+=======
+    "name": "inertia-vuetify/notifications",
+    "version": "1.0.2",
+>>>>>>> 9a407e8 (fix: update package name and repository URL in package.json, add .idea to .gitignore)
     "description": "Display Inertia flash messages using Vuetify snackbars",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -48,6 +53,6 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/gigerIT/inertia-vuetify-notifications.git"
+        "url": "git+https://github.com/inertia-vuetify/notifications.git"
     }
 }
