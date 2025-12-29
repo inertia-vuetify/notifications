@@ -249,8 +249,7 @@ function showBurst() {
                             <v-card-text>
                                 <v-alert type="info" variant="outlined" density="compact" class="mb-4">
                                     <div class="d-flex align-center">
-                                        <v-icon class="mr-2">mdi-information</v-icon>
-                                        <span>These buttons make real POST requests to Laravel. The backend uses <code>Inertia::flash()</code> to send notifications.</span>
+                                        <span>These buttons send POST requests to Laravel. The backend uses <code>Inertia::flash()</code> to send notifications.</span>
                                     </div>
                                 </v-alert>
                                 <v-row dense>
@@ -373,7 +372,7 @@ Inertia::flash('notification', [
                         <v-card>
                             <v-card-title class="d-flex align-center">
                                 <v-icon class="mr-2" color="primary">mdi-message-text</v-icon>
-                                Simple Notifications
+                                Client Side Notifications
                             </v-card-title>
                             <v-card-subtitle>
                                 Basic notifications using flash keys that map to colors
@@ -439,7 +438,7 @@ notify('Operation completed!', 'success')
                         <v-card>
                             <v-card-title class="d-flex align-center">
                                 <v-icon class="mr-2" color="secondary">mdi-cog</v-icon>
-                                Structured Notifications
+                                Structured Client Side Notifications
                             </v-card-title>
                             <v-card-subtitle>
                                 Custom timeout, closable, and type options
@@ -586,191 +585,6 @@ app.use(inertiaVuetifyNotifications({
                     </v-col>
                 </v-row>
 
-                <!-- Action Notifications -->
-                <v-row class="mt-4">
-                    <v-col cols="12">
-                        <v-card>
-                            <v-card-title class="d-flex align-center">
-                                <v-icon class="mr-2" color="primary">mdi-gesture-tap</v-icon>
-                                Notifications with Actions
-                            </v-card-title>
-                            <v-card-subtitle>
-                                Named actions (call registered handlers) and URL actions (Inertia navigation)
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <v-row dense>
-                                    <v-col cols="12" sm="6" md="3">
-                                        <v-btn 
-                                            color="info" 
-                                            variant="tonal" 
-                                            block 
-                                            @click="showWithDismissAction"
-                                        >
-                                            <v-icon start>mdi-close</v-icon>
-                                            Dismiss Action
-                                        </v-btn>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="3">
-                                        <v-btn 
-                                            color="warning" 
-                                            variant="tonal" 
-                                            block 
-                                            @click="showWithMultipleActions"
-                                        >
-                                            <v-icon start>mdi-delete-restore</v-icon>
-                                            Undo Delete
-                                        </v-btn>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="3">
-                                        <v-btn 
-                                            color="success" 
-                                            variant="tonal" 
-                                            block 
-                                            @click="showWithGlobalAction"
-                                        >
-                                            <v-icon start>mdi-earth</v-icon>
-                                            Global Action
-                                        </v-btn>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="3">
-                                        <v-btn 
-                                            color="primary" 
-                                            variant="tonal" 
-                                            block 
-                                            @click="showWithUrlAction"
-                                        >
-                                            <v-icon start>mdi-link</v-icon>
-                                            URL Action
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                            <v-card-text class="pt-0">
-                                <v-row>
-                                    <v-col cols="12" md="6">
-                                        <p class="text-caption text-medium-emphasis mb-1">Named Action:</p>
-                                        <v-code class="d-block pa-3 text-caption">
-actions: [{ label: 'Undo', name: 'undo-delete', payload: { id: 1 } }]
-                                        </v-code>
-                                    </v-col>
-                                    <v-col cols="12" md="6">
-                                        <p class="text-caption text-medium-emphasis mb-1">URL Action:</p>
-                                        <v-code class="d-block pa-3 text-caption">
-actions: [{ label: 'View', method: 'get', url: '/items/1' }]
-                                        </v-code>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
-
-                <!-- Deleted Items Tracker -->
-                <v-row v-if="deletedItems.length > 0" class="mt-4">
-                    <v-col cols="12">
-                        <v-card color="grey-lighten-4">
-                            <v-card-title class="d-flex align-center">
-                                <v-icon class="mr-2">mdi-delete</v-icon>
-                                Deleted Items ({{ deletedItems.length }})
-                            </v-card-title>
-                            <v-card-text>
-                                <v-chip
-                                    v-for="item in deletedItems"
-                                    :key="item.id"
-                                    class="mr-2 mb-2"
-                                    color="error"
-                                    variant="tonal"
-                                    closable
-                                    @click:close="deletedItems = deletedItems.filter(i => i.id !== item.id)"
-                                >
-                                    {{ item.name }}
-                                </v-chip>
-                                <p class="text-caption text-medium-emphasis mt-2">
-                                    Click "Undo Delete" button above, then click "Undo" in the notification to restore items.
-                                </p>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
-
-                <!-- Burst Demo -->
-                <v-row class="mt-4">
-                    <v-col cols="12">
-                        <v-card variant="outlined">
-                            <v-card-title class="d-flex align-center">
-                                <v-icon class="mr-2" color="orange">mdi-lightning-bolt</v-icon>
-                                Queue Burst Test
-                            </v-card-title>
-                            <v-card-subtitle>
-                                Demonstrates queued notification handling
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <v-btn 
-                                    color="orange" 
-                                    variant="flat" 
-                                    size="large"
-                                    @click="showBurst"
-                                >
-                                    <v-icon start>mdi-firework</v-icon>
-                                    Fire 4 Notifications
-                                </v-btn>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
-
-                <!-- Usage Info -->
-                <v-row class="mt-4">
-                    <v-col cols="12">
-                        <v-expansion-panels>
-                            <v-expansion-panel title="Backend Usage (Laravel)">
-                                <v-expansion-panel-text>
-                                    <v-code class="d-block pa-4 text-caption">
-// Simple flash messages
-Inertia::flash('success', 'Item saved successfully');
-Inertia::flash('error', 'Something went wrong');
-
-// Structured notifications
-Inertia::flash('notification', [
-    'message' => 'Item deleted',
-    'type' => 'warning',
-    'timeout' => 8000,
-    'actions' => [
-        ['label' => 'Undo', 'name' => 'undo-delete', 'payload' => ['id' => 123]],
-        ['label' => 'View Trash', 'method' => 'get', 'url' => '/trash'],
-    ],
-]);
-                                    </v-code>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                            <v-expansion-panel title="Frontend Usage (Vue)">
-                                <v-expansion-panel-text>
-                                    <v-code class="d-block pa-4 text-caption">
-import { useNotifications } from '@inertia-vuetify/notifications'
-
-const { notify, registerAction, unregisterAction } = useNotifications()
-
-// Simple notification
-notify('Hello world!', 'success')
-
-// Structured notification
-notify({
-    message: 'Custom notification',
-    type: 'info',
-    timeout: 3000,
-    actions: [{ label: 'Dismiss', name: 'dismiss' }],
-})
-
-// Register action handler
-registerAction('undo-delete', (payload) => {
-    console.log('Restoring item:', payload.id)
-})
-                                    </v-code>
-                                </v-expansion-panel-text>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                    </v-col>
-                </v-row>
         </v-container>
       </v-main>
 
