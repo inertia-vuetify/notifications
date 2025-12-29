@@ -5,7 +5,7 @@ Display Inertia flash messages as Vuetify snackbar notifications with support fo
 ## Installation
 
 ```bash
-npm install @gigerit/inertia-vuetify-notifications
+npm install @inertia-vuetify/notifications
 ```
 
 ### Peer Dependencies
@@ -24,7 +24,7 @@ This package requires the following peer dependencies:
 // main.ts
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
-import { inertiaVuetifyNotifications } from 'inertia-vuetify-notifications'
+import { inertiaVuetifyNotifications } from '@inertia-vuetify/notifications'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -57,7 +57,7 @@ Place the `NotificationProvider` component in your root layout:
 ```vue
 <!-- App.vue or Layout.vue -->
 <script setup lang="ts">
-import { NotificationProvider } from 'inertia-vuetify-notifications'
+import { NotificationProvider } from '@inertia-vuetify/notifications'
 </script>
 
 <template>
@@ -143,7 +143,7 @@ Or register dynamically in components:
 ```vue
 <script setup lang="ts">
 import { onUnmounted } from 'vue'
-import { useNotifications } from 'inertia-vuetify-notifications'
+import { useNotifications } from '@inertia-vuetify/notifications'
 import { router } from '@inertiajs/vue3'
 
 const { registerAction, unregisterAction } = useNotifications()
@@ -166,7 +166,7 @@ Trigger notifications programmatically from any component:
 
 ```vue
 <script setup lang="ts">
-import { useNotifications } from 'inertia-vuetify-notifications'
+import { useNotifications } from '@inertia-vuetify/notifications'
 
 const { notify } = useNotifications()
 
@@ -229,7 +229,7 @@ interface UrlAction {
 
 ## API
 
-### `inertiaVuetifyNotifications(options?)`
+### `@inertia-vuetify/notifications(options?)`
 
 Creates the Vue plugin. Returns a `Plugin` instance.
 
