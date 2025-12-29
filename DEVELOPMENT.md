@@ -21,6 +21,7 @@ notifications/                  # Root package
 
 #### Option 1: Run Both Simultaneously (Recommended)
 
+**Terminal 1 - Package + Vite Dev Server:**
 From the `demo-app` directory:
 
 ```bash
@@ -29,7 +30,16 @@ npm run dev:full
 
 This runs both:
 - Package build in watch mode (`npm run dev` in root)
-- Demo app dev server (`npm run dev` in demo-app)
+- Demo app Vite dev server (`npm run dev` in demo-app)
+
+**Terminal 2 - Laravel Server:**
+```bash
+cd /home/manu/work/inertia-vuetify/notifications/demo-app
+php artisan serve
+```
+
+**Access the app:**
+- http://localhost:8000
 
 #### Option 2: Run Separately
 
@@ -39,17 +49,20 @@ cd /home/manu/work/inertia-vuetify/notifications
 npm run dev
 ```
 
-**Terminal 2 - Demo App:**
+**Terminal 2 - Vite Dev Server:**
 ```bash
 cd /home/manu/work/inertia-vuetify/notifications/demo-app
 npm run dev
 ```
 
-**Terminal 3 - Laravel Server (if needed):**
+**Terminal 3 - Laravel Server:**
 ```bash
 cd /home/manu/work/inertia-vuetify/notifications/demo-app
 php artisan serve
 ```
+
+**Access the app:**
+- http://localhost:8000
 
 ### How HMR Works
 
