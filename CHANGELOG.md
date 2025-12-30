@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/inertia-vuetify/notifications/compare/v1.1.0...v1.2.0) (2025-12-30)
+
+
+### Features
+
+* add Inertia flash event support for client-side notifications ([03bac07](https://github.com/inertia-vuetify/notifications/commit/03bac07c138490d46a95ea01ca6414d4b7b4be76))
+
+
+### Bug Fixes
+
+* **demo-app:** update default notification location to 'top' ([0ecec46](https://github.com/inertia-vuetify/notifications/commit/0ecec469f7903007e50e442c466b7dcfd33c2d90))
+* update default notification location to 'top middle' ([24874d7](https://github.com/inertia-vuetify/notifications/commit/24874d7eabc2af0123732251d6c1a04d0a48516e))
+* update default notification location to 'top' ([e87c44c](https://github.com/inertia-vuetify/notifications/commit/e87c44ca4f92567a70f42aad316cc0fe961e1d6c))
+
 ## [1.1.0](https://github.com/inertia-vuetify/notifications/compare/v1.0.3...v1.1.0) (2025-12-29)
 
 
