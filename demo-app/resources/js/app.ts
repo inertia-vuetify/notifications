@@ -20,7 +20,7 @@ createInertiaApp({
                 defaults: {
                     timeout: 5000,
                     closable: true,
-                    location: 'top middle',
+                    location: 'top',
                 },
                 actions: {
                     // Global action handler example
