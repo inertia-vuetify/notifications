@@ -115,7 +115,10 @@ export declare interface NotificationPluginOptions {
     defaults?: {
         timeout?: number;
         closable?: boolean;
-        location?: 'top' | 'bottom' | 'top start' | 'top end' | 'bottom start' | 'bottom end';
+        location?: SnackbarLocation;
+        totalVisible?: number | string;
+        displayStrategy?: SnackbarDisplayStrategy;
+        gap?: number | string;
     };
     /**
      * Initial action handlers to register
@@ -128,6 +131,16 @@ export declare interface NotificationPluginOptions {
 }
 
 export declare const NotificationProvider: DefineComponent<    {}, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<{}> & Readonly<{}>, {}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
+
+/**
+ * Vuetify snackbar queue overflow strategy
+ */
+export declare type SnackbarDisplayStrategy = 'hold' | 'overflow';
+
+/**
+ * Vuetify snackbar location anchor values
+ */
+export declare type SnackbarLocation = 'top' | 'bottom' | 'start' | 'end' | 'left' | 'right' | 'center' | 'center center' | 'top start' | 'top end' | 'top left' | 'top right' | 'top center' | 'bottom start' | 'bottom end' | 'bottom left' | 'bottom right' | 'bottom center' | 'start top' | 'start bottom' | 'start center' | 'end top' | 'end bottom' | 'end center' | 'left top' | 'left bottom' | 'left center' | 'right top' | 'right bottom' | 'right center';
 
 /**
  * Snackbar queue item - simplified to avoid complex Vuetify type inference

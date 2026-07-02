@@ -16,9 +16,9 @@ npm install @inertia-vuetify/notifications
 
 This package requires the following peer dependencies:
 
-- `vue` ^3.4.0
+- `vue` ^3.5.0
 - `vuetify` ^4.0.0
-- `@inertiajs/vue3` ^2.0.0 (with flash event support, v2.3.3+)
+- `@inertiajs/vue3` ^2.3.3
 
 ## Setup
 
@@ -41,7 +41,10 @@ app.use(inertiaVuetifyNotifications({
   defaults: {
     timeout: 5000,
     closable: true,
-    location: 'bottom',
+    location: 'top',
+    totalVisible: 1,
+    displayStrategy: 'hold',
+    gap: 8,
   },
   colorMap: {
     success: 'success',
@@ -128,6 +131,8 @@ Inertia::flash('notification', [
 ]);
 ```
 
+When an action button is clicked, the registered handler or URL action runs and the snackbar is dismissed through Vuetify's queue close handler.
+
 ### Frontend
 
 #### Registering Action Handlers
@@ -202,9 +207,14 @@ function showStructured() {
 | `flashKeys` | `string[]` | `['success', 'error', 'warning', 'info', 'notification']` | Flash keys to listen for |
 | `defaults.timeout` | `number` | `5000` | Default notification timeout in ms |
 | `defaults.closable` | `boolean` | `true` | Show close button by default |
-| `defaults.location` | `string` | `'bottom'` | Snackbar position |
+| `defaults.location` | `SnackbarLocation` | `'top'` | Snackbar position |
+| `defaults.totalVisible` | `number \| string` | `1` | Number of visible snackbars |
+| `defaults.displayStrategy` | `'hold' \| 'overflow'` | `'hold'` | How new snackbars behave when the visible queue is full |
+| `defaults.gap` | `number \| string` | `8` | Gap between visible queued snackbars |
 | `colorMap` | `Record<string, string>` | `{ success, error, warning, info }` | Map flash keys to Vuetify colors |
 | `actions` | `Record<string, ActionHandler>` | `{}` | Initial action handlers |
+
+The provider renders Vuetify 4 `VSnackbarQueue`. `defaults.location` accepts Vuetify 4 snackbar anchor values, including `top`, `bottom end`, `top center`, `left top`, and `center`.
 
 ### Action Types
 
@@ -261,4 +271,3 @@ Vue component that renders the `VSnackbarQueue`. Place once in your app layout.
 ## License
 
 MIT
-

@@ -6,6 +6,46 @@ import type { InjectionKey, Ref } from 'vue'
 export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 /**
+ * Vuetify snackbar location anchor values
+ */
+export type SnackbarLocation =
+    | 'top'
+    | 'bottom'
+    | 'start'
+    | 'end'
+    | 'left'
+    | 'right'
+    | 'center'
+    | 'center center'
+    | 'top start'
+    | 'top end'
+    | 'top left'
+    | 'top right'
+    | 'top center'
+    | 'bottom start'
+    | 'bottom end'
+    | 'bottom left'
+    | 'bottom right'
+    | 'bottom center'
+    | 'start top'
+    | 'start bottom'
+    | 'start center'
+    | 'end top'
+    | 'end bottom'
+    | 'end center'
+    | 'left top'
+    | 'left bottom'
+    | 'left center'
+    | 'right top'
+    | 'right bottom'
+    | 'right center'
+
+/**
+ * Vuetify snackbar queue overflow strategy
+ */
+export type SnackbarDisplayStrategy = 'hold' | 'overflow'
+
+/**
  * Named action - calls a registered handler with payload
  */
 export interface NamedAction {
@@ -106,7 +146,10 @@ export interface NotificationPluginOptions {
     defaults?: {
         timeout?: number
         closable?: boolean
-        location?: 'top' | 'bottom' | 'top start' | 'top end' | 'bottom start' | 'bottom end'
+        location?: SnackbarLocation
+        totalVisible?: number | string
+        displayStrategy?: SnackbarDisplayStrategy
+        gap?: number | string
     }
 
     /**
@@ -159,4 +202,3 @@ export interface NotificationContext {
  * Injection key for the notification context
  */
 export const NOTIFICATION_INJECTION_KEY = Symbol('inertia-vuetify-notifications') as InjectionKey<NotificationContext>
-

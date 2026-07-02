@@ -19,20 +19,25 @@
     "scripts": {
         "dev": "vite build --watch",
         "build": "vue-tsc --noEmit && vite build",
-        "typecheck": "vue-tsc --noEmit"
+        "typecheck": "vue-tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "peerDependencies": {
         "@inertiajs/vue3": "^2.3.3",
-        "vue": "^3.4.0",
+        "vue": "^3.5.0",
         "vuetify": "^4.0.0"
     },
     "devDependencies": {
-        "@inertiajs/vue3": "^2.0.0",
+        "@inertiajs/vue3": "^2.3.3",
         "@types/node": "^25.0.3",
         "@vitejs/plugin-vue": "^6.0.3",
+        "@vue/test-utils": "^2.4.11",
+        "jsdom": "^26.1.0",
         "typescript": "^5.7.2",
         "vite": "^7.3.0",
         "vite-plugin-dts": "^4.3.0",
+        "vitest": "^3.2.6",
         "vue": "^3.5.13",
         "vue-tsc": "^3.1.8",
         "vuetify": "^4.0.0"

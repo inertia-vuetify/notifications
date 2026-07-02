@@ -19,8 +19,9 @@ function getActionLabel(action: NotificationAction): string {
   return action.label
 }
 
-async function handleAction(action: NotificationAction): Promise<void> {
+async function handleAction(action: NotificationAction, close: () => void): Promise<void> {
   await executeAction(action)
+  close()
 }
 
 function isClosable(item: unknown): boolean {
@@ -38,6 +39,9 @@ function isClosable(item: unknown): boolean {
     :location="options.defaults.location"
     :closable="options.defaults.closable"
     :timeout="options.defaults.timeout"
+    :total-visible="options.defaults.totalVisible"
+    :display-strategy="options.defaults.displayStrategy"
+    :gap="options.defaults.gap"
   >
     <template #actions="{ item, props: closeProps }">
       <template v-if="hasActions(item)">
@@ -46,7 +50,7 @@ function isClosable(item: unknown): boolean {
           :key="index"
           variant="text"
           size="small"
-          @click="handleAction(action)"
+          @click="handleAction(action, closeProps.onClick)"
         >
           {{ getActionLabel(action) }}
         </VBtn>
@@ -55,4 +59,3 @@ function isClosable(item: unknown): boolean {
     </template>
   </VSnackbarQueue>
 </template>
-

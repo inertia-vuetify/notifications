@@ -19,6 +19,9 @@ const DEFAULT_OPTIONS: Required<NotificationPluginOptions> = {
     timeout: 5000,
     closable: true,
     location: 'top',
+    totalVisible: 1,
+    displayStrategy: 'hold',
+    gap: 8,
   },
   actions: {},
   colorMap: {
@@ -152,4 +155,3 @@ export function useNotifications(): NotificationContext {
 
   return context
 }
-

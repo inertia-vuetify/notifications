@@ -10,6 +10,10 @@ export default defineConfig({
       insertTypesEntry: true,
       include: ['src/**/*.ts', 'src/**/*.vue'],
       rollupTypes: true,
+      beforeWriteFile: (filePath, content) => ({
+        filePath,
+        content: content.replace(/\r\n/g, '\n'),
+      }),
     }),
   ],
   build: {
@@ -20,7 +24,7 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
     },
     rollupOptions: {
-      external: ['vue', 'vuetify', '@inertiajs/vue3', 'vuetify/components', 'vuetify/lib/components/VSnackbar'],
+      external: ['vue', 'vuetify', '@inertiajs/vue3', 'vuetify/components'],
       output: {
         globals: {
           vue: 'Vue',
@@ -36,5 +40,3 @@ export default defineConfig({
     },
   },
 })
-
-

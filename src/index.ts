@@ -10,6 +10,8 @@ export { default as NotificationProvider } from './components/NotificationProvid
 // Types
 export {
   type HttpMethod,
+  type SnackbarLocation,
+  type SnackbarDisplayStrategy,
   type NamedAction,
   type UrlAction,
   type NotificationAction,
@@ -24,4 +26,3 @@ export {
   isNamedAction,
   isUrlAction,
 } from './types'
-

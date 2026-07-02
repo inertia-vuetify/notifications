@@ -19,6 +19,18 @@ notifications/                  # Root package
 
 ### Development Workflow
 
+#### Initial Setup
+
+The demo app is a Laravel app. Install both PHP and Node dependencies before running demo builds:
+
+```bash
+cd /home/manu/work/notifications/demo-app
+composer install
+npm ci
+```
+
+The Wayfinder Vite plugin runs `php artisan wayfinder:generate --with-form` during Vite build and dev startup. Without Composer dependencies, `vendor/autoload.php` is missing and the demo build fails before Vue or Vuetify compilation starts.
+
 #### Option 1: Run Both Simultaneously (Recommended)
 
 **Terminal 1 - Package + Vite Dev Server:**
@@ -34,7 +46,7 @@ This runs both:
 
 **Terminal 2 - Laravel Server:**
 ```bash
-cd /home/manu/work/inertia-vuetify/notifications/demo-app
+cd /home/manu/work/notifications/demo-app
 php artisan serve
 ```
 
@@ -45,19 +57,19 @@ php artisan serve
 
 **Terminal 1 - Package Build (watch mode):**
 ```bash
-cd /home/manu/work/inertia-vuetify/notifications
+cd /home/manu/work/notifications
 npm run dev
 ```
 
 **Terminal 2 - Vite Dev Server:**
 ```bash
-cd /home/manu/work/inertia-vuetify/notifications/demo-app
+cd /home/manu/work/notifications/demo-app
 npm run dev
 ```
 
 **Terminal 3 - Laravel Server:**
 ```bash
-cd /home/manu/work/inertia-vuetify/notifications/demo-app
+cd /home/manu/work/notifications/demo-app
 php artisan serve
 ```
 
@@ -84,6 +96,8 @@ php artisan serve
 
 **Package:**
 ```bash
+npm run typecheck
+npm run test
 npm run build
 ```
 
@@ -91,6 +105,7 @@ npm run build
 ```bash
 cd demo-app
 npm run build
+npm run build:ssr
 ```
 
 ### Troubleshooting
@@ -108,4 +123,3 @@ npm run build
 - The package uses peerDependencies for Vue, Vuetify, and Inertia
 - Demo app provides these dependencies
 - If version mismatches occur, update demo-app versions to match package requirements
-
