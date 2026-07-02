@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/inertia-vuetify/notifications/compare/v1.2.0...v2.0.0) (2026-03-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* vuetfiy 4 support
+
+### Features
+
+* vuetfiy 4 support ([86e68b8](https://github.com/inertia-vuetify/notifications/commit/86e68b8dad488e7ffe81f855f967b7817394f097))
+
 ## [1.2.0](https://github.com/inertia-vuetify/notifications/compare/v1.1.0...v1.2.0) (2025-12-30)
 
 
