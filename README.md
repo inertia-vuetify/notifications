@@ -91,6 +91,10 @@ Inertia::flash('warning', 'Please review your input');
 Inertia::flash('info', 'New features available');
 ```
 
+Client-side `router.flash()` updates enqueue only changed notification keys, so retained
+flash values do not replay when another key changes. Clearing a key allows its value
+to be shown again. A new navigation resets deduplication for server flashes.
+
 For more information, see the [Inertia Flash Data documentation](https://inertiajs.com/docs/v2/data-props/flash-data).
 
 #### Structured Notifications

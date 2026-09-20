@@ -4,21 +4,6 @@ import { createNotificationContext } from './composables/useNotifications'
 import { NOTIFICATION_INJECTION_KEY, type NotificationPluginOptions } from './types'
 
 /**
- * Process flash data and add notifications to queue
- */
-function processFlashData(
-  flash: Record<string, unknown>,
-  context: ReturnType<typeof createNotificationContext>
-): void {
-  for (const key of context.options.flashKeys) {
-    const value = flash[key]
-    if (value !== undefined && value !== null) {
-      context.notify(value as string | Parameters<typeof context.notify>[0], key)
-    }
-  }
-}
-
-/**
  * Create the Inertia Vuetify Notifications plugin
  */
 export function inertiaVuetifyNotifications(options: NotificationPluginOptions = {}): Plugin {
@@ -29,28 +14,31 @@ export function inertiaVuetifyNotifications(options: NotificationPluginOptions =
       // Provide context for useNotifications composable
       app.provide(NOTIFICATION_INJECTION_KEY, context)
 
-      // Track the last processed flash key to avoid duplicates
-      // This persists until a new navigation with different flash data
-      let lastProcessedFlashKey: string | null = null
+      // Compare each key because router.flash() retains other flash values.
+      let previousFlash = new Map<string, string | undefined>()
 
-      // Clear processed flash on new navigation (before the response)
       router.on('before', () => {
-        lastProcessedFlashKey = null
+        previousFlash.clear()
       })
 
       // Listen to flash events for both server-side flash and client-side router.flash()
       // The flash event (v2.3.3+) fires for all flash data
       router.on('flash', (event) => {
         const flash = event.detail.flash
-        if (!flash || typeof flash !== 'object' || Object.keys(flash).length === 0) return
+        if (!flash || typeof flash !== 'object') return
 
-        const flashKey = JSON.stringify(flash)
+        const currentFlash = new Map<string, string | undefined>()
+        for (const key of context.options.flashKeys) {
+          const value = flash[key]
+          if (value === undefined || value === null) continue
 
-        // Only process if this is new flash data
-        if (flashKey !== lastProcessedFlashKey) {
-          lastProcessedFlashKey = flashKey
-          processFlashData(flash, context)
+          const snapshot = JSON.stringify(value)
+          currentFlash.set(key, snapshot)
+          if (!previousFlash.has(key) || previousFlash.get(key) !== snapshot) {
+            context.notify(value as Parameters<typeof context.notify>[0], key)
+          }
         }
+        previousFlash = currentFlash
       })
     },
   }
