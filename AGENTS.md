@@ -160,3 +160,10 @@ Do not leave docs for later when user-visible behavior changes.
 ## 12) External Documentation Lookup
 
 When you need framework/library API references (Vuetify, Inertia, Vue, Vite, Laravel integration details), use Context7 MCP to verify current behavior before implementing uncertain changes.
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.
