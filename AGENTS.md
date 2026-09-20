@@ -41,7 +41,7 @@ In `src/plugin.ts`:
 - Subscribes to Inertia router events:
   - `before`: resets deduplication state.
   - `flash`: receives flash payloads and queues notifications.
-- Uses a serialized flash snapshot (`JSON.stringify`) to avoid duplicate processing on the same navigation.
+- For flash deduplication semantics, see [README.md usage](README.md#simple-notifications).
 
 ### 4.2 Notification context
 
