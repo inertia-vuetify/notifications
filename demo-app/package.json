@@ -11,7 +11,9 @@
         "serve": "php artisan serve --host=0.0.0.0",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
-        "lint": "eslint . --fix"
+        "lint": "eslint . --fix",
+        "lint:check": "eslint .",
+        "typecheck": "vue-tsc --noEmit"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

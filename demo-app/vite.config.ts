@@ -25,6 +25,10 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+    resolve: {
+        // The file-linked package must use the demo's initialized Inertia router.
+        dedupe: ['@inertiajs/vue3'],
+    },
     optimizeDeps: {
         exclude: ['@inertia-vuetify/notifications'],
     },

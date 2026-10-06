@@ -104,6 +104,32 @@ describe('inertiaVuetifyNotifications', () => {
     expect(context.queue.value).toHaveLength(2)
   })
 
+  it('does not replay retained flash keys when a client adds a notification', () => {
+    const context = installPlugin()
+    const flashHandler = routerMock.handlers.get('flash')!
+
+    flashHandler({ detail: { flash: { success: 'Saved' } } })
+    context.queue.value.splice(0)
+    flashHandler({ detail: { flash: {
+      success: 'Saved',
+      notification: { message: 'Structured', type: 'info' },
+    } } })
+
+    expect(context.queue.value.map(item => item.text)).toEqual(['Structured'])
+  })
+
+  it('queues changed values and allows a cleared flash key to be reused', () => {
+    const context = installPlugin()
+    const flashHandler = routerMock.handlers.get('flash')!
+
+    flashHandler({ detail: { flash: { success: 'Saved' } } })
+    flashHandler({ detail: { flash: { success: 'Updated' } } })
+    flashHandler({ detail: { flash: {} } })
+    flashHandler({ detail: { flash: { success: 'Updated' } } })
+
+    expect(context.queue.value.map(item => item.text)).toEqual(['Saved', 'Updated', 'Updated'])
+  })
+
   it('ignores empty and non-object flash payloads', () => {
     const context = installPlugin()
     const flashHandler = routerMock.handlers.get('flash')

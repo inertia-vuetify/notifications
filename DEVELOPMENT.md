@@ -4,6 +4,12 @@
 
 The demo-app is configured to use the local package with HMR support for efficient development.
 
+Use Node 24 LTS for package and demo validation, matching CI and release tooling.
+The demo keeps Laravel 12 and Inertia 2. Its Composer platform targets PHP 8.2
+so updates on newer PHP installations preserve the declared minimum version.
+The stable Inertia adapter replaces the retired `dev-flash` branch; newer
+Inertia 2 releases that conflict with Boost 1 require separate tooling work.
+
 ### Package Structure
 
 ```
@@ -104,9 +110,18 @@ npm run build
 **Demo App:**
 ```bash
 cd demo-app
+npm run typecheck
+npm run lint:check
 npm run build
 npm run build:ssr
+vendor/bin/phpunit
 ```
+
+The PHP tests use in-memory SQLite, array sessions/cache/mail, and a test-only
+application key from `phpunit.xml`. They exercise the demo flash redirects without
+provider calls. The package integration test uses the actual Vuetify snackbar
+components to check action dismissal; the remaining tests cover parsing, action
+dispatch, and router event deduplication.
 
 ### Troubleshooting
 

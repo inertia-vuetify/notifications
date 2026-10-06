@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            demo-app/package-lock.json
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite
+          coverage: none
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: demo-app
+      - run: composer validate --strict
+        working-directory: demo-app
+      - run: composer check-platform-reqs
+        working-directory: demo-app
+      - run: npm ci
+        working-directory: demo-app
+      - run: npm run typecheck
+        working-directory: demo-app
+      - run: npm run lint:check
+        working-directory: demo-app
+      - run: npm run build:ssr
+        working-directory: demo-app
+      - run: vendor/bin/phpunit
+        working-directory: demo-app
