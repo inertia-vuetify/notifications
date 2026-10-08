@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/inertia-vuetify/notifications/compare/v2.0.0...v2.0.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* harden vuetify 4 notification support ([bef1fd8](https://github.com/inertia-vuetify/notifications/commit/bef1fd89884dc9c8528ccca06b804c71e904eecd))
+* prevent retained flash notifications from replaying and refresh dependencies ([6d58753](https://github.com/inertia-vuetify/notifications/commit/6d58753e9668e6cd495239ccf80557d49c66b76d))
+
 ## [2.0.0](https://github.com/inertia-vuetify/notifications/compare/v1.2.0...v2.0.0) (2026-03-03)
 
 
