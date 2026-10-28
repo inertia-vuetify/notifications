@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/inertia-vuetify/notifications/compare/v2.0.1...v3.0.0) (2026-10-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires @inertiajs/vue3 ^3; the CommonJS build was removed.
+
+### Features
+
+* support Inertia 3 and ship ESM only ([2e13fa0](https://github.com/inertia-vuetify/notifications/commit/2e13fa089582c1d9cad85e53de90dccd1d04b5a2))
+
 ## [2.0.1](https://github.com/inertia-vuetify/notifications/compare/v2.0.0...v2.0.1) (2026-10-06)
 
 
