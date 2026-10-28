@@ -1,22 +1,17 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/vue3';
 import { inertiaVuetifyNotifications } from '@inertia-vuetify/notifications';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { DefineComponent } from 'vue';
-import { createApp, h } from 'vue';
-import vuetify from './plugins/vuetify';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { createAppVuetify } from './plugins/vuetify';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+// The @inertiajs/vite plugin resolves ./pages and reuses this entry for SSR
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
-    setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(vuetify)
-            .use(inertiaVuetifyNotifications({
+    withApp(app, { ssr }) {
+        app.use(createAppVuetify(ssr)).use(
+            inertiaVuetifyNotifications({
                 defaults: {
                     timeout: 5000,
                     closable: true,
@@ -29,8 +24,8 @@ createInertiaApp({
                         alert(`Global action executed! Payload: ${JSON.stringify(payload)}`);
                     },
                 },
-            }))
-            .mount(el);
+            }),
+        );
     },
     progress: {
         color: '#4B5563',

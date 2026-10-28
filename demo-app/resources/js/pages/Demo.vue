@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { NotificationProvider, useNotifications } from '@inertia-vuetify/notifications';
+import { NotificationProvider, useNotificationAction, useNotifications } from '@inertia-vuetify/notifications';
 import { router } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useTheme } from 'vuetify';
 
-const { notify, registerAction, unregisterAction, queue, options } = useNotifications();
+const { notify, queue, options } = useNotifications();
 const queueCount = computed(() => queue.value.length);
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value.dark);
@@ -55,32 +55,20 @@ function showPositionDemo(position: SnackbarLocation) {
     positionSnackbars.value[position] = true;
 }
 
-// Register a page-specific action for undo functionality
-onMounted(() => {
-    registerAction('undo-delete', (payload) => {
-        if (payload?.id && payload?.name) {
-            deletedItems.value = deletedItems.value.filter(item => item.id !== payload.id);
-            notify({
-                message: `Restored "${payload.name}"`,
-                type: 'success',
-                timeout: 3000,
-            });
-        }
-    });
-
-    // registerAction('dismiss', () => {
-    //     // Just dismiss - the notification auto-closes when action is clicked
-    // });
-
-    registerAction('view-details', (payload) => {
-        alert(`Viewing details for item: ${JSON.stringify(payload)}`);
-    });
+// Page-specific actions, registered while this page is mounted
+useNotificationAction('undo-delete', (payload) => {
+    if (payload?.id && payload?.name) {
+        deletedItems.value = deletedItems.value.filter((item) => item.id !== payload.id);
+        notify({
+            message: `Restored "${payload.name}"`,
+            type: 'success',
+            timeout: 3000,
+        });
+    }
 });
 
-onUnmounted(() => {
-    unregisterAction('undo-delete');
-    // unregisterAction('dismiss');
-    unregisterAction('view-details');
+useNotificationAction('view-details', (payload) => {
+    alert(`Viewing details for item: ${JSON.stringify(payload)}`);
 });
 
 // Simple notification demos

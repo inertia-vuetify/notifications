@@ -1,19 +1,20 @@
-import { inject, ref } from 'vue'
+import { getCurrentScope, inject, onScopeDispose, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import {
   NOTIFICATION_INJECTION_KEY,
-  type NotificationContext,
-  type StructuredNotification,
-  type InternalSnackbarItem,
+  NOTIFICATION_META,
   type ActionHandler,
-  type ActionRegistry,
-  type NotificationPluginOptions,
+  type HttpMethod,
   type NotificationAction,
+  type NotificationContext,
+  type NotificationPluginOptions,
+  type QueuedNotification,
+  type ResolvedNotificationOptions,
+  type StructuredNotification,
   isNamedAction,
-  isUrlAction,
 } from '../types'
 
-const DEFAULT_OPTIONS: Required<NotificationPluginOptions> = {
+const DEFAULT_OPTIONS: ResolvedNotificationOptions = {
   flashKeys: ['success', 'error', 'warning', 'info', 'notification'],
   defaults: {
     timeout: 5000,
@@ -38,97 +39,80 @@ const DEFAULT_OPTIONS: Required<NotificationPluginOptions> = {
 export function createNotificationContext(
   userOptions: NotificationPluginOptions = {}
 ): NotificationContext {
-  const options: Required<NotificationPluginOptions> = {
-    ...DEFAULT_OPTIONS,
-    ...userOptions,
+  const options: ResolvedNotificationOptions = {
+    flashKeys: userOptions.flashKeys ?? DEFAULT_OPTIONS.flashKeys,
     defaults: { ...DEFAULT_OPTIONS.defaults, ...userOptions.defaults },
-    colorMap: { ...DEFAULT_OPTIONS.colorMap, ...userOptions.colorMap },
     actions: { ...userOptions.actions },
+    colorMap: { ...DEFAULT_OPTIONS.colorMap, ...userOptions.colorMap },
   }
 
-  const queue = ref<InternalSnackbarItem[]>([])
-  const actionRegistry: ActionRegistry = new Map()
-
-  // Register initial actions from options
-  for (const [name, handler] of Object.entries(options.actions)) {
-    actionRegistry.set(name, handler)
-  }
+  const queue = ref<QueuedNotification[]>([])
+  // Each registration is its own object, so unregistering one cannot remove a newer
+  // registration of the same handler under the same name
+  const actionRegistry = new Map<string, { handler: ActionHandler }>(
+    Object.entries(options.actions).map(([name, handler]) => [name, { handler }])
+  )
 
   /**
-   * Convert a flash value to a notification item
+   * Convert a message to a queued notification
    */
-  function parseNotification(
-    value: string | StructuredNotification,
-    flashKey?: string
-  ): InternalSnackbarItem {
-    // Simple string notification
-    if (typeof value === 'string') {
-      return {
-        text: value,
-        color: flashKey ? options.colorMap[flashKey] : undefined,
-        timeout: options.defaults.timeout,
-        closable: options.defaults.closable,
-      }
-    }
+  function toQueuedNotification(
+    notification: string | StructuredNotification,
+    type?: string
+  ): QueuedNotification {
+    const structured = typeof notification === 'string' ? { message: notification } : notification
 
-    // Structured notification
-    const color = value.type
-      ? options.colorMap[value.type] || value.type
-      : flashKey
-        ? options.colorMap[flashKey]
+    // A structured type that is not mapped is used as a Vuetify color, e.g. 'teal'
+    const color = structured.type
+      ? options.colorMap[structured.type] ?? structured.type
+      : type
+        ? options.colorMap[type]
         : undefined
 
     return {
-      text: value.message,
+      text: structured.message,
       color,
-      timeout: value.timeout ?? options.defaults.timeout,
-      closable: value.closable ?? options.defaults.closable,
-      actions: value.actions,
+      timeout: structured.timeout ?? options.defaults.timeout,
+      [NOTIFICATION_META]: {
+        closable: structured.closable ?? options.defaults.closable,
+        actions: structured.actions ?? [],
+      },
     }
   }
 
-  /**
-   * Add notification to queue
-   */
-  function notify(notification: string | StructuredNotification, flashKey?: string): void {
-    const item = parseNotification(notification, flashKey)
-    queue.value.push(item)
+  function notify(notification: string | StructuredNotification, type?: string): void {
+    queue.value.push(toQueuedNotification(notification, type))
   }
 
-  /**
-   * Register a named action handler
-   */
-  function registerAction(name: string, handler: ActionHandler): void {
-    actionRegistry.set(name, handler)
+  function registerAction(name: string, handler: ActionHandler): () => void {
+    const registration = { handler }
+    actionRegistry.set(name, registration)
+
+    return () => {
+      if (actionRegistry.get(name) === registration) {
+        actionRegistry.delete(name)
+      }
+    }
   }
 
-  /**
-   * Unregister a named action handler
-   */
   function unregisterAction(name: string): void {
     actionRegistry.delete(name)
   }
 
-  /**
-   * Execute an action
-   */
   async function executeAction(action: NotificationAction): Promise<void> {
     if (isNamedAction(action)) {
-      const handler = actionRegistry.get(action.name)
-      if (handler) {
-        await handler(action.payload)
+      const registration = actionRegistry.get(action.name)
+      if (registration) {
+        await registration.handler(action.payload)
       } else {
         console.warn(`[inertia-vuetify-notifications] No handler registered for action: ${action.name}`)
       }
-    } else if (isUrlAction(action)) {
-      // Use Inertia router for URL-based actions
-      const method = action.method.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete'
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.visit(action.url, {
-        method,
-        data: action.data as any,
-      })
+      return
     }
+
+    // Flash data is untyped JSON, so normalize methods such as 'POST'
+    const method = (action.method ?? 'get').toLowerCase() as HttpMethod
+    router.visit(action.url, { method, data: action.data })
   }
 
   return {
@@ -154,4 +138,15 @@ export function useNotifications(): NotificationContext {
   }
 
   return context
+}
+
+/**
+ * Register a named action handler for the lifetime of the current component or effect scope
+ */
+export function useNotificationAction(name: string, handler: ActionHandler): void {
+  const unregister = useNotifications().registerAction(name, handler)
+
+  if (getCurrentScope()) {
+    onScopeDispose(unregister)
+  }
 }

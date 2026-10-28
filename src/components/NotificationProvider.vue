@@ -1,35 +1,27 @@
 <script setup lang="ts">
-import { VSnackbarQueue, VBtn } from 'vuetify/components'
+import { useLocale } from 'vuetify'
+import { VBtn, VSnackbarQueue } from 'vuetify/components'
 import { useNotifications } from '../composables/useNotifications'
-import type { NotificationAction, InternalSnackbarItem } from '../types'
+import { NOTIFICATION_META, type NotificationAction, type NotificationMeta } from '../types'
 
 const { queue, executeAction, options } = useNotifications()
+const { t } = useLocale()
 
-function hasActions(item: unknown): item is InternalSnackbarItem & { actions: NotificationAction[] } {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    'actions' in item &&
-    Array.isArray((item as InternalSnackbarItem).actions) &&
-    (item as InternalSnackbarItem).actions!.length > 0
-  )
+// Queue items without metadata were added to the queue directly; treat them as plain messages
+function metaOf(item: unknown): NotificationMeta {
+  const meta = typeof item === 'object' && item !== null
+    ? (item as { [NOTIFICATION_META]?: NotificationMeta })[NOTIFICATION_META]
+    : undefined
+
+  return meta ?? { closable: options.defaults.closable, actions: [] }
 }
 
-function getActionLabel(action: NotificationAction): string {
-  return action.label
-}
-
-async function handleAction(action: NotificationAction, close: () => void): Promise<void> {
-  await executeAction(action)
-  close()
-}
-
-function isClosable(item: unknown): boolean {
-  if (typeof item === 'string') return true
-  if (typeof item === 'object' && item !== null && 'closable' in item) {
-    return (item as InternalSnackbarItem).closable !== false
+async function runAction(action: NotificationAction, close: () => void): Promise<void> {
+  try {
+    await executeAction(action)
+  } finally {
+    close()
   }
-  return true
 }
 </script>
 
@@ -37,25 +29,27 @@ function isClosable(item: unknown): boolean {
   <VSnackbarQueue
     v-model="queue"
     :location="options.defaults.location"
-    :closable="options.defaults.closable"
     :timeout="options.defaults.timeout"
     :total-visible="options.defaults.totalVisible"
     :display-strategy="options.defaults.displayStrategy"
     :gap="options.defaults.gap"
   >
     <template #actions="{ item, props: closeProps }">
-      <template v-if="hasActions(item)">
-        <VBtn
-          v-for="(action, index) in item.actions"
-          :key="index"
-          variant="text"
-          size="small"
-          @click="handleAction(action, closeProps.onClick)"
-        >
-          {{ getActionLabel(action) }}
-        </VBtn>
-      </template>
-      <VBtn v-if="isClosable(item)" v-bind="closeProps" icon="mdi-close"/>
+      <VBtn
+        v-for="(action, index) in metaOf(item).actions"
+        :key="index"
+        variant="text"
+        size="small"
+        @click="runAction(action, closeProps.onClick)"
+      >
+        {{ action.label }}
+      </VBtn>
+      <VBtn
+        v-if="metaOf(item).closable"
+        v-bind="closeProps"
+        icon="$close"
+        :aria-label="t('$vuetify.dismiss')"
+      />
     </template>
   </VSnackbarQueue>
 </template>
