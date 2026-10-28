@@ -5,10 +5,9 @@
 The demo-app is configured to use the local package with HMR support for efficient development.
 
 Use Node 24 LTS for package and demo validation, matching CI and release tooling.
-The demo keeps Laravel 12 and Inertia 2. Its Composer platform targets PHP 8.2
-so updates on newer PHP installations preserve the declared minimum version.
-The stable Inertia adapter replaces the retired `dev-flash` branch; newer
-Inertia 2 releases that conflict with Boost 1 require separate tooling work.
+The demo runs Laravel 13 with the Inertia 3 Laravel adapter and Laravel Boost 2.
+Its Composer platform targets PHP 8.3, Laravel 13's minimum, so updates on newer
+PHP installations preserve the declared minimum version.
 
 ### Package Structure
 
@@ -30,7 +29,7 @@ notifications/                  # Root package
 The demo app is a Laravel app. Install both PHP and Node dependencies before running demo builds:
 
 ```bash
-cd /home/manu/work/notifications/demo-app
+cd demo-app
 composer install
 npm ci
 ```
@@ -52,7 +51,7 @@ This runs both:
 
 **Terminal 2 - Laravel Server:**
 ```bash
-cd /home/manu/work/notifications/demo-app
+cd demo-app
 php artisan serve
 ```
 
@@ -63,19 +62,19 @@ php artisan serve
 
 **Terminal 1 - Package Build (watch mode):**
 ```bash
-cd /home/manu/work/notifications
+cd <repository root>
 npm run dev
 ```
 
 **Terminal 2 - Vite Dev Server:**
 ```bash
-cd /home/manu/work/notifications/demo-app
+cd demo-app
 npm run dev
 ```
 
 **Terminal 3 - Laravel Server:**
 ```bash
-cd /home/manu/work/notifications/demo-app
+cd demo-app
 php artisan serve
 ```
 
@@ -105,6 +104,7 @@ php artisan serve
 npm run typecheck
 npm run test
 npm run build
+npm run lint:package
 ```
 
 **Demo App:**
@@ -119,9 +119,17 @@ vendor/bin/phpunit
 
 The PHP tests use in-memory SQLite, array sessions/cache/mail, and a test-only
 application key from `phpunit.xml`. They exercise the demo flash redirects without
-provider calls. The package integration test uses the actual Vuetify snackbar
-components to check action dismissal; the remaining tests cover parsing, action
-dispatch, and router event deduplication.
+provider calls. The package's `NotificationProvider` tests mount real Vuetify
+snackbars to check rendering, dismissal, and attributes. The plugin tests boot a
+real Inertia app per test and answer its requests with a fake backend through
+Inertia's `http` client, to check flash deduplication across responses, prefetches,
+deferred props, and `router.flash()`; the remaining tests cover parsing and action
+dispatch.
+
+The demo's single `resources/js/app.ts` entry also serves SSR through the
+`@inertiajs/vite` plugin. In development, `npm run dev` renders SSR through the
+Vite server; for a production check, run `npm run build:ssr`, start
+`node bootstrap/ssr/app.js`, and serve the app with Laravel.
 
 ### Troubleshooting
 

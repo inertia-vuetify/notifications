@@ -28,9 +28,9 @@ Primary goals:
 ## 3) Stack and Compatibility
 
 - Package: TypeScript + Vue 3 + Vite library mode
-- Peer deps: `vue`, `vuetify`, `@inertiajs/vue3`
-- Current package behavior assumes Inertia flash event support (v2.3.3+)
-- Build output: ESM (`dist/index.js`), CJS (`dist/index.cjs`), declarations (`dist/index.d.ts`)
+- Peer deps: `vue` ^3.5, `vuetify` ^4, `@inertiajs/vue3` ^3 (Inertia 3 and Vuetify 4 are ESM only, so the package is too)
+- Build output: ESM (`dist/index.js`) and bundled declarations (`dist/index.d.ts`)
+- TypeScript stays on 6.x: TypeScript 7 drops the JS compiler API that `vue-tsc`, `vite-plugin-dts`/api-extractor, and `typescript-eslint` need.
 
 ## 4) Core Architecture
 
@@ -38,15 +38,15 @@ Primary goals:
 
 In `src/plugin.ts`:
 - `inertiaVuetifyNotifications(options?)` creates and provides a notification context.
-- Subscribes to Inertia router events:
-  - `before`: resets deduplication state.
-  - `flash`: receives flash payloads and queues notifications.
-- For flash deduplication semantics, see [README.md usage](README.md#simple-notifications).
+- In the browser only, subscribes to flash changes and unsubscribes on `app.onUnmount`. Dedup follows page state, not visit events (`before`/`success` miss concurrent, cancelled, and deferred visits):
+  - A synchronous watch on `usePage()` records whether the props object was replaced (response or visit: every flash value is new) or kept (`router.flash()` merge: only changed values are new), and forgets handled values that left the flash; `router.flash(() => ({}))` clears without an event.
+  - The `flash` event queues the new values.
+- `tests/plugin.test.ts` drives a real Inertia app with a fake backend via `http` client; extend it for any lifecycle change. User-facing semantics: [README.md usage](README.md#simple-notifications).
 
 ### 4.2 Notification context
 
 In `src/composables/useNotifications.ts`:
-- Holds `queue` as `Ref<InternalSnackbarItem[]>`.
+- Holds `queue` as `Ref<QueuedNotification[]>`. Queue items carry only VSnackbar props as string keys; per-notification data (closable, actions) lives under the `NOTIFICATION_META` symbol, because `VSnackbarQueue` spreads every string key onto the snackbar element (see `src/types.ts`).
 - Normalizes simple string and structured notifications.
 - Merges plugin options with defaults.
 - Maintains named action handlers in `Map<string, ActionHandler>`.
@@ -63,9 +63,9 @@ In `src/components/NotificationProvider.vue`:
 
 From `src/index.ts`:
 - `inertiaVuetifyNotifications`
-- `useNotifications`
+- `useNotifications`, `useNotificationAction`
 - `NotificationProvider`
-- Type exports from `src/types.ts`
+- Type exports, type guards, and `NOTIFICATION_META` from `src/types.ts`
 
 Keep this surface stable unless explicitly changing a major/minor API contract.
 
@@ -81,10 +81,11 @@ From `demo-app/`:
 - `php artisan serve`: serves Laravel app
 - `npm run build`: builds demo frontend
 
-Typical local validation for package changes:
-1. `npm run typecheck`
-2. `npm run build`
-3. Manual demo check in `demo-app` for behavior-sensitive changes
+Typical local validation for package changes (Node 24, as in CI):
+1. `npm run typecheck` (covers `src/`, `tests/`, and the Vite configs)
+2. `npm test`
+3. `npm run build` then `npm run lint:package` (publint + are-the-types-wrong on the packed output)
+4. Manual demo check in `demo-app` for behavior-sensitive changes
 
 ## 6) Coding Standards
 
@@ -131,8 +132,10 @@ For non-trivial changes, verify:
 - Structured notification payloads map type/color/timeout/closable correctly
 - Named actions call registered handlers with payload
 - URL actions perform Inertia navigation with method/data
-- Duplicate flash payloads do not enqueue twice during same navigation cycle
+- Retained flash keys are not replayed by `router.flash()`, prefetching, deferred prop reloads, or cancelled visits
+- Snackbar elements carry no notification metadata attributes
 - Missing named action handler warns but does not crash
+- Demo SSR build renders with the plugin installed
 
 ## 9) Documentation and API Sync
 

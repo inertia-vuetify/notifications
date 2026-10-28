@@ -1,8 +1,8 @@
 // Plugin
 export { inertiaVuetifyNotifications } from './plugin'
 
-// Composable
-export { useNotifications } from './composables/useNotifications'
+// Composables
+export { useNotifications, useNotificationAction } from './composables/useNotifications'
 
 // Component
 export { default as NotificationProvider } from './components/NotificationProvider.vue'
@@ -12,17 +12,20 @@ export {
   type HttpMethod,
   type SnackbarLocation,
   type SnackbarDisplayStrategy,
+  type NotificationType,
+  type JsonValue,
   type NamedAction,
   type UrlAction,
   type NotificationAction,
   type StructuredNotification,
-  type NotificationItem,
-  type InternalSnackbarItem,
-  type SnackbarQueueItem,
+  type NotificationMeta,
+  type QueuedNotification,
   type ActionHandler,
-  type ActionRegistry,
+  type NotificationDefaults,
   type NotificationPluginOptions,
+  type ResolvedNotificationOptions,
   type NotificationContext,
+  NOTIFICATION_META,
   isNamedAction,
   isUrlAction,
 } from './types'

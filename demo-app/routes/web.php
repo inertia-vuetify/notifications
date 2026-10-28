@@ -12,21 +12,25 @@ Route::prefix('demo/flash')->name('demo.flash.')->group(function () {
     // Simple flash messages
     Route::post('success', function () {
         Inertia::flash('success', 'Item saved successfully!');
+
         return back();
     })->name('success');
 
     Route::post('error', function () {
         Inertia::flash('error', 'Something went wrong. Please try again.');
+
         return back();
     })->name('error');
 
     Route::post('warning', function () {
         Inertia::flash('warning', 'Please review your input before continuing.');
+
         return back();
     })->name('warning');
 
     Route::post('info', function () {
         Inertia::flash('info', 'New features are now available!');
+
         return back();
     })->name('info');
 
@@ -38,6 +42,7 @@ Route::prefix('demo/flash')->name('demo.flash.')->group(function () {
             'timeout' => 8000,
             'closable' => true,
         ]);
+
         return back();
     })->name('structured');
 
@@ -61,6 +66,7 @@ Route::prefix('demo/flash')->name('demo.flash.')->group(function () {
                 ],
             ],
         ]);
+
         return back();
     })->name('with-actions');
 
@@ -70,6 +76,7 @@ Route::prefix('demo/flash')->name('demo.flash.')->group(function () {
             'success' => 'Data saved successfully!',
             'info' => 'Your changes will be reviewed.',
         ]);
+
         return back();
     })->name('multiple');
 });

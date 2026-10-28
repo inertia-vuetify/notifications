@@ -46,6 +46,16 @@ export type SnackbarLocation =
 export type SnackbarDisplayStrategy = 'hold' | 'overflow'
 
 /**
+ * Built-in notification types. Any other string is used as a Vuetify color.
+ */
+export type NotificationType = 'success' | 'error' | 'warning' | 'info'
+
+/**
+ * JSON-serializable value, as delivered in Inertia flash data
+ */
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue }
+
+/**
  * Named action - calls a registered handler with payload
  */
 export interface NamedAction {
@@ -55,13 +65,16 @@ export interface NamedAction {
 }
 
 /**
- * URL-based action - makes an Inertia request
+ * URL-based action - makes an Inertia visit
  */
 export interface UrlAction {
     label: string
-    method: HttpMethod
     url: string
-    data?: Record<string, unknown>
+    /**
+     * Defaults to 'get'
+     */
+    method?: HttpMethod
+    data?: Record<string, JsonValue>
 }
 
 /**
@@ -80,56 +93,48 @@ export function isNamedAction(action: NotificationAction): action is NamedAction
  * Type guard for URL actions
  */
 export function isUrlAction(action: NotificationAction): action is UrlAction {
-    return 'url' in action && 'method' in action
+    return 'url' in action && typeof action.url === 'string'
 }
 
 /**
- * Structured notification from backend
+ * Structured notification from backend or `notify()`
  */
 export interface StructuredNotification {
     message: string
-    type?: 'success' | 'error' | 'warning' | 'info' | string
+    type?: NotificationType | (string & {})
     timeout?: number
     closable?: boolean
     actions?: NotificationAction[]
 }
 
 /**
- * Internal notification item used by the queue
+ * Symbol key for notification data that must not reach VSnackbar as props or attributes.
+ * VSnackbarQueue copies symbol keys into each item, but Vue's mergeProps skips them.
  */
-export interface NotificationItem {
+export const NOTIFICATION_META: unique symbol = Symbol('inertia-vuetify-notifications:meta')
+
+/**
+ * Per-notification behaviour rendered by NotificationProvider
+ */
+export interface NotificationMeta {
+    closable: boolean
+    actions: NotificationAction[]
+}
+
+/**
+ * Normalized notification waiting in the queue. Its string keys are VSnackbar props.
+ */
+export interface QueuedNotification {
     text: string
     color?: string
     timeout?: number
-    closable?: boolean
-    actions?: NotificationAction[]
+    [NOTIFICATION_META]?: NotificationMeta
 }
-
-/**
- * Internal snackbar item with our custom properties
- */
-export interface InternalSnackbarItem {
-    text: string
-    color?: string
-    timeout?: number
-    closable?: boolean
-    actions?: NotificationAction[]
-}
-
-/**
- * Snackbar queue item - simplified to avoid complex Vuetify type inference
- */
-export type SnackbarQueueItem = string | InternalSnackbarItem
 
 /**
  * Action handler function signature
  */
 export type ActionHandler = (payload?: Record<string, unknown>) => void | Promise<void>
-
-/**
- * Registry of named action handlers
- */
-export type ActionRegistry = Map<string, ActionHandler>
 
 /**
  * Plugin options
@@ -143,14 +148,7 @@ export interface NotificationPluginOptions {
     /**
      * Default notification settings
      */
-    defaults?: {
-        timeout?: number
-        closable?: boolean
-        location?: SnackbarLocation
-        totalVisible?: number | string
-        displayStrategy?: SnackbarDisplayStrategy
-        gap?: number | string
-    }
+    defaults?: Partial<NotificationDefaults>
 
     /**
      * Initial action handlers to register
@@ -158,9 +156,31 @@ export interface NotificationPluginOptions {
     actions?: Record<string, ActionHandler>
 
     /**
-     * Map flash keys to notification colors
+     * Map flash keys and notification types to Vuetify colors
      */
     colorMap?: Record<string, string>
+}
+
+/**
+ * Default notification and queue settings
+ */
+export interface NotificationDefaults {
+    timeout: number
+    closable: boolean
+    location: SnackbarLocation
+    totalVisible: number | string
+    displayStrategy: SnackbarDisplayStrategy
+    gap: number | string
+}
+
+/**
+ * Plugin options merged with defaults
+ */
+export interface ResolvedNotificationOptions {
+    flashKeys: string[]
+    defaults: NotificationDefaults
+    actions: Record<string, ActionHandler>
+    colorMap: Record<string, string>
 }
 
 /**
@@ -168,19 +188,19 @@ export interface NotificationPluginOptions {
  */
 export interface NotificationContext {
     /**
-     * Reactive queue of notifications
+     * Reactive queue of notifications waiting to be shown
      */
-    queue: Ref<InternalSnackbarItem[]>
+    queue: Ref<QueuedNotification[]>
 
     /**
-     * Add a notification to the queue
+     * Add a notification to the queue. `type` picks the color for plain string messages.
      */
-    notify: (notification: string | StructuredNotification, flashKey?: string) => void
+    notify: (notification: string | StructuredNotification, type?: string) => void
 
     /**
-     * Register a named action handler
+     * Register a named action handler. Returns a function that unregisters it.
      */
-    registerAction: (name: string, handler: ActionHandler) => void
+    registerAction: (name: string, handler: ActionHandler) => () => void
 
     /**
      * Unregister a named action handler
@@ -188,14 +208,14 @@ export interface NotificationContext {
     unregisterAction: (name: string) => void
 
     /**
-     * Execute an action (internal use)
+     * Execute an action (used by NotificationProvider and custom renderers)
      */
     executeAction: (action: NotificationAction) => Promise<void>
 
     /**
-     * Plugin options
+     * Plugin options merged with defaults
      */
-    options: Required<NotificationPluginOptions>
+    options: ResolvedNotificationOptions
 }
 
 /**

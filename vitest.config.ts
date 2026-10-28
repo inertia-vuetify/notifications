@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     include: ['tests/**/*.test.ts'],
-    server: { deps: { inline: ['vuetify'] } },
+    // Inlined so vi.resetModules() can give each plugin test a fresh Inertia router
+    server: { deps: { inline: ['vuetify', /@inertiajs\//] } },
     environment: 'jsdom',
     globals: true,
   },

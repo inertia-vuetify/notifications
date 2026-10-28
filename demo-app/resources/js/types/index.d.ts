@@ -1,13 +1,3 @@
-export interface Auth {
-    user: User;
-}
-
-export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    name: string;
-    quote: { message: string; author: string };
-    auth: Auth;
-};
-
 export interface User {
     id: number;
     name: string;
@@ -16,4 +6,10 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+}
+
+export interface SharedPageProps {
+    name: string;
+    quote: { message: string; author: string };
+    auth: { user: User | null };
 }
